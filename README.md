@@ -5,7 +5,7 @@ all PDF-based files labeled Vintage2020 or v2020 are vintage 2020 data, accessed
      
 PFD-based migration by age files not labeled Vintage2020 or v2020 are Vintage 2016, downloaded from https://live.laborstats.alaska.gov/pop/migration.cfmin in 2018; 
     
-US Census Bureau American Community Survey (ACS) data are five-year 2006to2010 and 2011to2015 geograpic mobility data (with respective year labels).
+US Census Bureau American Community Survey (ACS) data are five-year 2006to2010 and 2011to2015 geographic mobility data (with respective year labels).
 
 (I'll clean up the file organization and info soon, mainly didn't want to disrupt currently-linked applications that use the v2017 and ACS data.)
 
