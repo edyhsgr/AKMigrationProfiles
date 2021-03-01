@@ -1,11 +1,11 @@
 # AKMigrationProfiles
 Tables and tabling for Alaska PFD-based migration data by age and sex, available online from the Alaska Department of Labor and Workforce Development; 
-      
-      all PDF-based files labeled Vintage2020 or v2020 are vintage 2020 data, accessed at https://live.laborstats.alaska.gov/pop/migration.cfm in February 2021; 
+
+all PDF-based files labeled Vintage2020 or v2020 are vintage 2020 data, accessed at https://live.laborstats.alaska.gov/pop/migration.cfm in February 2021; 
      
-     PFD-based migration by age files not labeled Vintage2020 or v2020 are Vintage 2016, downloaded from https://live.laborstats.alaska.gov/pop/migration.cfmin 2018; 
+PFD-based migration by age files not labeled Vintage2020 or v2020 are Vintage 2016, downloaded from https://live.laborstats.alaska.gov/pop/migration.cfmin 2018; 
     
-    US Census Bureau American Community Survey (ACS) data are five-year 2006to2010 and 2011to2015 geograpic mobility data (with respective year labels).
+US Census Bureau American Community Survey (ACS) data are five-year 2006to2010 and 2011to2015 geograpic mobility data (with respective year labels).
 
 (I'll clean up the file organization and info soon, mainly didn't want to disrupt currently-linked applications that use the v2017 and ACS data.)
 
