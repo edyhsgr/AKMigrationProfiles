@@ -1,4 +1,4 @@
-Period,Borough/Census Area FIPS,Age,Total,Male,Female,Total,Male,Female,Data from: https://live.laborstats.alaska.gov/pop/migration/PFDMigrationByAgeBySexBCA.xls via https://live.laborstats.alaska.gov/pop/migration.html February 2023.
+Period,Borough/Census Area FIPS,Age,In_Total,In_Male,In_Female,Out_Total,Out_Male,Out_Female,Data from: https://live.laborstats.alaska.gov/pop/migration/PFDMigrationByAgeBySexBCA.xls via https://live.laborstats.alaska.gov/pop/migration.html February 2023.
 2015 to 2020,000,Total,37873,20812,17061,45525,24973,20552,
 2015 to 2020,000,0-4,3090,1573,1517,3467,1796,1671,
 2015 to 2020,000,5-9,2648,1357,1291,2923,1494,1429,
