@@ -408,7 +408,7 @@ YRateScaledExtrapMin<--1.5*abs(min(c(NetRateScaledSelect,NetRateScaled2015to2020
 YRateScaledExtrapMax<-1.5*abs(max(c(NetRateScaledSelect,NetRateScaled2015to2020,NetRateScaled2010to2015,NetRateScaled2005to2010,NetRateScaled2005to2010,NetRateScaled2000to2005,NetRateScaled1995to2000,NetRateScaled1990to1995)))
 
 ##########
-#PFDMigrSelect<-PFDMigrAgeSexBCA[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period==input$Period1 & PFDMigrAgeSexBCA$Age!="Total",]
+#MIGRATION
 plot(InSelect,ylab="",xlab="",axes=F,col="blue",type="l",lwd=4,panel.first=c(abline(h=0)),ylim=c(YMin,YMax))
 lines(In2015to2020, col="blue", lwd=1, lty=3)
 lines(In2010to2015, col="blue", lwd=1, lty=3)
@@ -439,7 +439,7 @@ legend(10,YMax,
   legend=c("In-Migration", "Out-Migration", "Net Migration"), 
   col=c("blue", "orange", "forestgreen"), 
   lwd=c(4,4,4), cex=1)
-mtext(side=1,line=-23,adj=.7,text="Sum Total: ",font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-23,adj=.7,text="Sum 0 to 84: ",font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-23,adj=.9,text=sum(NetSelect[1:17]),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-22,adj=.7,text="Sum 0 to 14: ",font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-22,adj=.9,text=sum(NetSelect[1:3]),font=2,cex=.8,col="forestgreen")
@@ -481,7 +481,7 @@ legend(10,YRateMax,
        legend=c("In-Migration Ratios", "Out-Migration Rates", "Net Migration Ratios"), 
        col=c("blue", "orange", "forestgreen"), 
        lwd=c(4,4,4), cex=1)
-mtext(side=1,line=-23,adj=.7,text="Sum Total: ",font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-23,adj=.7,text="Sum 0 to 84: ",font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-23,adj=.9,text=round(sum(NetRateSelect[1:17])*5,2),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-22,adj=.7,text="Sum 0 to 14: ",font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-22,adj=.9,text=round(sum(NetRateSelect[1:3])*5,2),font=2,cex=.8,col="forestgreen")
@@ -523,7 +523,7 @@ legend(8,YRateScaledMax,
        legend=c("Scaled In-Migration Ratios", "Scaled Out-Migration Rates", "Scaled Net Migration Ratios"), 
        col=c("blue", "orange", "forestgreen"), 
        lwd=c(4,4,4), cex=1)
-mtext(side=1,line=-23,adj=.7,text="Sum Total: ",font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-23,adj=.7,text="Sum 0 to 84: ",font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-23,adj=.9,text=round(sum(NetRateScaledSelect[1:17])*5,2),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-22,adj=.7,text="Sum 0 to 14: ",font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-22,adj=.9,text=round(sum(NetRateScaledSelect[1:3])*5,2),font=2,cex=.8,col="forestgreen")
@@ -553,7 +553,7 @@ legend(8,YRateScaledExtrapMax,
        col=c("forestgreen", "darkgrey"), 
        lwd=c(4,2), lty=c(1,2), cex=1)
 mtext(side=1,line=-24,adj=.85,text="Extrapolated Values ",font=2,cex=.9,col="darkgrey")
-mtext(side=1,line=-23,adj=.7,text="Sum Total: ",font=2,cex=.8,col="darkgrey")
+mtext(side=1,line=-23,adj=.7,text="Sum 0 to 84: ",font=2,cex=.8,col="darkgrey")
 mtext(side=1,line=-23,adj=.9,text=round(sum(NetRateScaledExtrap[1:17])*5,2),font=2,cex=.8,col="darkgrey")
 mtext(side=1,line=-22,adj=.7,text="Sum 0 to 14: ",font=2,cex=.8,col="darkgrey")
 mtext(side=1,line=-22,adj=.9,text=round(sum(NetRateScaledExtrap[1:3])*5,2),font=2,cex=.8,col="darkgrey")
