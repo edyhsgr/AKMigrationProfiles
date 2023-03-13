@@ -2,8 +2,8 @@
 ##############################################################################################################################
 ##R CODE FOR PFD MIGRATION REVIEW
 ##
-##EDDIE HUNSINGER (AFFILIATION: ALASKA DEPARTMENT OF LABOR AND WORKFORCE DEVELOPMENT), NOVEMBER 2018 (UPDATED MARCH 2023)
-##http://www.demog.berkeley.edu/~eddieh/
+##EDDIE HUNSINGER, NOVEMBER 2018 (UPDATED MARCH 2023)
+##edyhsgr.github.io
 ##edyhsgr@gmail.com
 ##############################################################################################################################
 ##############################################################################################################################
