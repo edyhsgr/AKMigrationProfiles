@@ -440,15 +440,15 @@ legend(10,YMax,
   col=c("blue", "orange", "forestgreen"), 
   lwd=c(4,4,4), cex=1)
 mtext(side=1,line=-23,adj=.7,text="Sum Total: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-23,adj=.9,text=sum(NetSelect[2:17]),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-23,adj=.9,text=sum(NetSelect[1:17]),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-22,adj=.7,text="Sum 0 to 14: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-22,adj=.9,text=sum(NetSelect[2:4]),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-22,adj=.9,text=sum(NetSelect[1:3]),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-21,adj=.7,text="Sum 15 to 19: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-21,adj=.9,text=sum(NetSelect[5]),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-21,adj=.9,text=sum(NetSelect[4]),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-20,adj=.7,text="Sum 20 to 49: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-20,adj=.9,text=sum(NetSelect[6:11]),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-20,adj=.9,text=sum(NetSelect[5:10]),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-19,adj=.7,text="Sum 50 to 84: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-19,adj=.9,text=sum(NetSelect[12:17]),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-19,adj=.9,text=sum(NetSelect[11:17]),font=2,cex=.8,col="forestgreen")
 
 #RATES
 plot(InRateSelect,ylab="",xlab="",axes=F,col="blue",type="l",lwd=4,panel.first=c(abline(h=0)),ylim=c(YRateMin,YRateMax))
@@ -482,15 +482,15 @@ legend(10,YRateMax,
        col=c("blue", "orange", "forestgreen"), 
        lwd=c(4,4,4), cex=1)
 mtext(side=1,line=-23,adj=.7,text="Sum Total: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-23,adj=.9,text=round(sum(NetRateSelect[2:17])*5,2),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-23,adj=.9,text=round(sum(NetRateSelect[1:17])*5,2),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-22,adj=.7,text="Sum 0 to 14: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-22,adj=.9,text=round(sum(NetRateSelect[2:4])*5,2),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-22,adj=.9,text=round(sum(NetRateSelect[1:3])*5,2),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-21,adj=.7,text="Sum 15 to 19: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-21,adj=.9,text=round(sum(NetRateSelect[5])*5,2),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-21,adj=.9,text=round(sum(NetRateSelect[4])*5,2),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-20,adj=.7,text="Sum 20 to 49: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-20,adj=.9,text=round(sum(NetRateSelect[6:11])*5,2),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-20,adj=.9,text=round(sum(NetRateSelect[5:10])*5,2),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-19,adj=.7,text="Sum 50 to 84: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-19,adj=.9,text=round(sum(NetRateSelect[12:17])*5,2),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-19,adj=.9,text=round(sum(NetRateSelect[11:17])*5,2),font=2,cex=.8,col="forestgreen")
 
 #SCALED RATES
 plot(InRateSelect/sum(InRateSelect),ylab="",xlab="",axes=F,col="blue",type="l",lwd=4,panel.first=c(abline(h=0)),ylim=c(YRateScaledMin,YRateScaledMax))
@@ -524,15 +524,15 @@ legend(8,YRateScaledMax,
        col=c("blue", "orange", "forestgreen"), 
        lwd=c(4,4,4), cex=1)
 mtext(side=1,line=-23,adj=.7,text="Sum Total: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-23,adj=.9,text=round(sum(NetRateScaledSelect[2:17])*5,2),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-23,adj=.9,text=round(sum(NetRateScaledSelect[1:17])*5,2),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-22,adj=.7,text="Sum 0 to 14: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-22,adj=.9,text=round(sum(NetRateScaledSelect[2:4])*5,2),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-22,adj=.9,text=round(sum(NetRateScaledSelect[1:3])*5,2),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-21,adj=.7,text="Sum 15 to 19: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-21,adj=.9,text=round(sum(NetRateScaledSelect[5])*5,2),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-21,adj=.9,text=round(sum(NetRateScaledSelect[4])*5,2),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-20,adj=.7,text="Sum 20 to 49: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-20,adj=.9,text=round(sum(NetRateScaledSelect[6:11])*5,2),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-20,adj=.9,text=round(sum(NetRateScaledSelect[5:10])*5,2),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-19,adj=.7,text="Sum 50 to 84: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-19,adj=.9,text=round(sum(NetRateScaledSelect[12:17])*5,2),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-19,adj=.9,text=round(sum(NetRateScaledSelect[11:17])*5,2),font=2,cex=.8,col="forestgreen")
 
 #SCALED AND EXTRAPOLATED RATES
 plot(NetRateScaledSelect,ylab="",xlab="",axes=F,col="forestgreen",type="l",lwd=4,panel.first=c(abline(h=0)),ylim=c(YRateScaledExtrapMin,YRateScaledExtrapMax))
@@ -554,15 +554,15 @@ legend(8,YRateScaledExtrapMax,
        lwd=c(4,2), lty=c(1,2), cex=1)
 mtext(side=1,line=-24,adj=.85,text="Extrapolated Values ",font=2,cex=.9,col="darkgrey")
 mtext(side=1,line=-23,adj=.7,text="Sum Total: ",font=2,cex=.8,col="darkgrey")
-mtext(side=1,line=-23,adj=.9,text=round(sum(NetRateScaledExtrap[2:17])*5,2),font=2,cex=.8,col="darkgrey")
+mtext(side=1,line=-23,adj=.9,text=round(sum(NetRateScaledExtrap[1:17])*5,2),font=2,cex=.8,col="darkgrey")
 mtext(side=1,line=-22,adj=.7,text="Sum 0 to 14: ",font=2,cex=.8,col="darkgrey")
-mtext(side=1,line=-22,adj=.9,text=round(sum(NetRateScaledExtrap[2:4])*5,2),font=2,cex=.8,col="darkgrey")
+mtext(side=1,line=-22,adj=.9,text=round(sum(NetRateScaledExtrap[1:3])*5,2),font=2,cex=.8,col="darkgrey")
 mtext(side=1,line=-21,adj=.7,text="Sum 15 to 19: ",font=2,cex=.8,col="darkgrey")
-mtext(side=1,line=-21,adj=.9,text=round(sum(NetRateScaledExtrap[5])*5,2),font=2,cex=.8,col="darkgrey")
+mtext(side=1,line=-21,adj=.9,text=round(sum(NetRateScaledExtrap[4])*5,2),font=2,cex=.8,col="darkgrey")
 mtext(side=1,line=-20,adj=.7,text="Sum 20 to 49: ",font=2,cex=.8,col="darkgrey")
-mtext(side=1,line=-20,adj=.9,text=round(sum(NetRateScaledExtrap[6:11])*5,2),font=2,cex=.8,col="darkgrey")
+mtext(side=1,line=-20,adj=.9,text=round(sum(NetRateScaledExtrap[5:10])*5,2),font=2,cex=.8,col="darkgrey")
 mtext(side=1,line=-19,adj=.7,text="Sum 50 to 84: ",font=2,cex=.8,col="darkgrey")
-mtext(side=1,line=-19,adj=.9,text=round(sum(NetRateScaledExtrap[12:17])*5,2),font=2,cex=.8,col="darkgrey")
+mtext(side=1,line=-19,adj=.9,text=round(sum(NetRateScaledExtrap[11:17])*5,2),font=2,cex=.8,col="darkgrey")
 }
 
 },height=950,width=950)
@@ -570,3 +570,4 @@ mtext(side=1,line=-19,adj=.9,text=round(sum(NetRateScaledExtrap[12:17])*5,2),fon
 }
 
 shinyApp(ui = ui, server = server)
+
