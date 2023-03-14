@@ -87,7 +87,8 @@ selectInput("Period2", "Extrapolation starting period (only for bottom-right pan
             ),
 ),
 
-  p("This interface was made with Shiny for R, using population and PDF-based-migration data from the Alaska Department of Labor and Workforce Development, Research and Analysis Section. Eddie Hunsinger, November 2018 (updated March 2023)."),
+  p("This interface was made with Shiny for R, using population and PFD-based-migration data from the Alaska Department of Labor and Workforce Development, Research and Analysis Section. Eddie Hunsinger, November 2018 (updated March 2023)."),
+  p("Printed ratio sums are multiplied by five for age group size."),
   p("'Extrapolated values' (in grey, bottom-right panel) are average linear change between the selected starting period and 2015 to 2020, applied to the 2015 to 2020 period data."),
   p(tags$a(href="https://live.laborstats.alaska.gov/pop/migration.cfm", "Migration Data and Information (PFD-based-migration methods under Methodology)."),
     tags$a(href="https://web.archive.org/web/20210611231927/https://live.laborstats.alaska.gov/pop/index.cfm", "Population Estimates Data and Information."),
@@ -110,9 +111,13 @@ PFDMigrAgeSexBCA<-read.table(file="https://raw.githubusercontent.com/edyhsgr/AKM
 PopAgeSexBCA19902000<-data.frame(read.table(file="https://raw.githubusercontent.com/edyhsgr/AKMigrationProfiles/master/Tables/PopAgeBySexBCA_1990to2000v2012.csv",header=TRUE,sep=",",colClasses=c("Borough.Census.Area.FIPS"="character")))
 PopAgeSexBCA20002010<-data.frame(read.table(file="https://raw.githubusercontent.com/edyhsgr/AKMigrationProfiles/master/Tables/PopAgeBySexBCA_2000to2010v2010.csv",header=TRUE,sep=",",colClasses=c("Borough.Census.Area.FIPS"="character")))
 PopAgeSexBCA20102020<-data.frame(read.table(file="https://raw.githubusercontent.com/edyhsgr/AKMigrationProfiles/master/Tables/PopAgeBySexBCA_2010to2020v2020.csv",header=TRUE,sep=",",colClasses=c("Borough.Census.Area.FIPS"="character")))
+PopAgeSexBCA19902000$Borough.Census.Area.FIPS[PopAgeSexBCA19902000$Borough.Census.Area.FIPS=="270"]<-"158"
+PopAgeSexBCA20002010$Borough.Census.Area.FIPS[PopAgeSexBCA20002010$Borough.Census.Area.FIPS=="270"]<-"158"
+PopAgeSexBCA20102020$Borough.Census.Area.FIPS[PopAgeSexBCA20102020$Borough.Census.Area.FIPS=="270"]<-"158"
 PopAgeSexBCA19902000[PopAgeSexBCA19902000==0]<-1
 PopAgeSexBCA20002010[PopAgeSexBCA20002010==0]<-1
 PopAgeSexBCA20102020[PopAgeSexBCA20102020==0]<-1
+
 
 server<-function(input, output) {	
 	output$plots<-renderPlot({
@@ -120,12 +125,37 @@ par(mfrow=c(2,2))
 	
 ##############################################################################################################################
 ##############################################################################################################################
-if(input$Area1=="063" | input$Area1=="066" | input$Area1=="105" | input$Area1=="158" | input$Area1=="195" | input$Area1=="198" | input$Area1=="230" | input$Area1=="275") {plot.new()
+if(input$Area1=="063" | input$Area1=="066" | input$Area1=="105" | input$Area1=="195" | input$Area1=="198" | input$Area1=="230" | input$Area1=="275") {plot.new()
 	    legend("topleft",legend=c("I need to manage some geog info to add this area."),cex=1.5,bty="n")
 	  }
 	  
-if(input$Area1!="063" & input$Area1!="066" & input$Area1!="105" & input$Area1!="158" & input$Area1!="195" & input$Area1!="198" & input$Area1!="230" & input$Area1!="275") {	  
-	  #To print full names - thanks https://stackoverflow.com/questions/48106504/r-shiny-how-to-display-choice-label-in-selectinput 
+if(input$Area1!="063" & input$Area1!="066" & input$Area1!="105" & input$Area1!="195" & input$Area1!="198" & input$Area1!="230" & input$Area1!="275") {	  
+
+if(input$Sex=="Total") {
+  PopAgeSexBCA19902000$Select<-PopAgeSexBCA19902000$Total
+  PopAgeSexBCA20002010$Select<-PopAgeSexBCA20002010$Total
+  PopAgeSexBCA20102020$Select<-PopAgeSexBCA20102020$Total
+  PFDMigrAgeSexBCA$In_Select<-PFDMigrAgeSexBCA$In_Total
+  PFDMigrAgeSexBCA$Out_Select<-PFDMigrAgeSexBCA$Out_Total
+}
+
+if(input$Sex=="Male") {
+  PopAgeSexBCA19902000$Select<-PopAgeSexBCA19902000$Male
+  PopAgeSexBCA20002010$Select<-PopAgeSexBCA20002010$Male
+  PopAgeSexBCA20102020$Select<-PopAgeSexBCA20102020$Male
+  PFDMigrAgeSexBCA$In_Select<-PFDMigrAgeSexBCA$In_Male
+  PFDMigrAgeSexBCA$Out_Select<-PFDMigrAgeSexBCA$Out_Male
+}
+
+if(input$Sex=="Female") {
+  PopAgeSexBCA19902000$Select<-PopAgeSexBCA19902000$Female
+  PopAgeSexBCA20002010$Select<-PopAgeSexBCA20002010$Female
+  PopAgeSexBCA20102020$Select<-PopAgeSexBCA20102020$Female
+  PFDMigrAgeSexBCA$In_Select<-PFDMigrAgeSexBCA$In_Female
+  PFDMigrAgeSexBCA$Out_Select<-PFDMigrAgeSexBCA$Out_Female
+}
+  
+#To print full names - thanks https://stackoverflow.com/questions/48106504/r-shiny-how-to-display-choice-label-in-selectinput 
 	  AreaNames <- c(
 	    "Alaska"="000",
 	    "Aleutians East Census Area"="013",
@@ -167,33 +197,34 @@ if(input$Area1!="063" & input$Area1!="066" & input$Area1!="105" & input$Area1!="
 
 #Age groups
 agegroups <- c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80-84")
+agelength<-17 #seventeen age groups
+agesize<-5
 
 ##########
 ##Selections
-if(input$Sex=="Total") {
-InSelect<-PFDMigrAgeSexBCA$In_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period==input$Period1 & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-OutSelect<-PFDMigrAgeSexBCA$Out_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period==input$Period1 & PFDMigrAgeSexBCA$Age!="Total"][1:17]
+InSelect<-PFDMigrAgeSexBCA$In_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period==input$Period1 & PFDMigrAgeSexBCA$Age!="Total"][1:agelength]
+OutSelect<-PFDMigrAgeSexBCA$Out_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period==input$Period1 & PFDMigrAgeSexBCA$Age!="Total"][1:agelength]
 NetSelect<-InSelect-OutSelect
-Pop<-rbind(PopAgeSexBCA20102020[PopAgeSexBCA20102020$Borough.Census.Area.FIPS==input$Area1,1:6],
-                   PopAgeSexBCA20002010[PopAgeSexBCA20002010$Borough.Census.Area.FIPS==input$Area1 & PopAgeSexBCA20002010$Year!="2010",1:6],
-                   PopAgeSexBCA19902000[PopAgeSexBCA19902000$Borough.Census.Area.FIPS==input$Area1 & PopAgeSexBCA19902000$Year!="2000",1:6])
+Pop<-rbind(PopAgeSexBCA20102020[PopAgeSexBCA20102020$Borough.Census.Area.FIPS==input$Area1,c(1:6,8)],
+                   PopAgeSexBCA20002010[PopAgeSexBCA20002010$Borough.Census.Area.FIPS==input$Area1 & PopAgeSexBCA20002010$Year!="2010",c(1:6,8)],
+                   PopAgeSexBCA19902000[PopAgeSexBCA19902000$Borough.Census.Area.FIPS==input$Area1 & PopAgeSexBCA19902000$Year!="2000",c(1:6,8)])
 
 PopSelect<-Pop[Pop$Year==as.numeric(substr(input$Period1,1,4))+2,]
-PopSelect<-PopSelect[1:17,]
+PopSelect<-PopSelect[1:agelength,]
 
-In2015to2020<-PFDMigrAgeSexBCA$In_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2015 to 2020" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-In2010to2015<-PFDMigrAgeSexBCA$In_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2010 to 2015" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-In2005to2010<-PFDMigrAgeSexBCA$In_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2005 to 2010" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-In2000to2005<-PFDMigrAgeSexBCA$In_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2000 to 2005" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-In1995to2000<-PFDMigrAgeSexBCA$In_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1995 to 2000" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-In1990to1995<-PFDMigrAgeSexBCA$In_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1990 to 1995" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
+In2015to2020<-PFDMigrAgeSexBCA$In_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2015 to 2020" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength]
+In2010to2015<-PFDMigrAgeSexBCA$In_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2010 to 2015" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength]
+In2005to2010<-PFDMigrAgeSexBCA$In_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2005 to 2010" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength]
+In2000to2005<-PFDMigrAgeSexBCA$In_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2000 to 2005" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength]
+In1995to2000<-PFDMigrAgeSexBCA$In_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1995 to 2000" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength]
+In1990to1995<-PFDMigrAgeSexBCA$In_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1990 to 1995" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength]
 
-Out2015to2020<-PFDMigrAgeSexBCA$Out_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2015 to 2020" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-Out2010to2015<-PFDMigrAgeSexBCA$Out_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2010 to 2015" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-Out2005to2010<-PFDMigrAgeSexBCA$Out_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2005 to 2010" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-Out2000to2005<-PFDMigrAgeSexBCA$Out_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2000 to 2005" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-Out1995to2000<-PFDMigrAgeSexBCA$Out_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1995 to 2000" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-Out1990to1995<-PFDMigrAgeSexBCA$Out_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1990 to 1995" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
+Out2015to2020<-PFDMigrAgeSexBCA$Out_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2015 to 2020" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength]
+Out2010to2015<-PFDMigrAgeSexBCA$Out_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2010 to 2015" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength]
+Out2005to2010<-PFDMigrAgeSexBCA$Out_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2005 to 2010" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength]
+Out2000to2005<-PFDMigrAgeSexBCA$Out_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2000 to 2005" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength]
+Out1995to2000<-PFDMigrAgeSexBCA$Out_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1995 to 2000" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength]
+Out1990to1995<-PFDMigrAgeSexBCA$Out_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1990 to 1995" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength]
 
 Net2015to2020<-In2015to2020-Out2015to2020
 Net2010to2015<-In2010to2015-Out2010to2015
@@ -202,156 +233,33 @@ Net2000to2005<-In2000to2005-Out2000to2005
 Net1995to2000<-In1995to2000-Out1995to2000
 Net1990to1995<-In1990to1995-Out1990to1995
 
-InRateSelect<-PFDMigrAgeSexBCA$In_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period==input$Period1 & PFDMigrAgeSexBCA$Age!="Total"][1:17] / PopSelect$Total[1:17]
-InRate2015to2020<-PFDMigrAgeSexBCA$In_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2015 to 2020" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-  Pop$Total[Pop$Year==2017][1:17]
-InRate2010to2015<-PFDMigrAgeSexBCA$In_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2010 to 2015" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-  Pop$Total[Pop$Year==2012][1:17]
-InRate2005to2010<-PFDMigrAgeSexBCA$In_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2005 to 2010" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-  Pop$Total[Pop$Year==2007][1:17]
-InRate2000to2005<-PFDMigrAgeSexBCA$In_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2000 to 2005" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-  Pop$Total[Pop$Year==2002][1:17]
-InRate1995to2000<-PFDMigrAgeSexBCA$In_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1995 to 2000" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-  Pop$Total[Pop$Year==1997][1:17]
-InRate1990to1995<-PFDMigrAgeSexBCA$In_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1990 to 1995" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-  Pop$Total[Pop$Year==1992][1:17]
+InRateSelect<-PFDMigrAgeSexBCA$In_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period==input$Period1 & PFDMigrAgeSexBCA$Age!="Total"][1:agelength] / PopSelect$Select[1:agelength]
+InRate2015to2020<-PFDMigrAgeSexBCA$In_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2015 to 2020" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength] / 
+  Pop$Select[Pop$Year==2017][1:agelength]
+InRate2010to2015<-PFDMigrAgeSexBCA$In_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2010 to 2015" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength] / 
+  Pop$Select[Pop$Year==2012][1:agelength]
+InRate2005to2010<-PFDMigrAgeSexBCA$In_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2005 to 2010" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength] / 
+  Pop$Select[Pop$Year==2007][1:agelength]
+InRate2000to2005<-PFDMigrAgeSexBCA$In_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2000 to 2005" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength] / 
+  Pop$Select[Pop$Year==2002][1:agelength]
+InRate1995to2000<-PFDMigrAgeSexBCA$In_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1995 to 2000" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength] / 
+  Pop$Select[Pop$Year==1997][1:agelength]
+InRate1990to1995<-PFDMigrAgeSexBCA$In_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1990 to 1995" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength] / 
+  Pop$Select[Pop$Year==1992][1:agelength]
 
-OutRateSelect<-PFDMigrAgeSexBCA$Out_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period==input$Period1 & PFDMigrAgeSexBCA$Age!="Total"][1:17] / PopSelect$Total[1:17]
-OutRate2015to2020<-PFDMigrAgeSexBCA$Out_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2015 to 2020" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-  Pop$Total[Pop$Year==2017][1:17]
-OutRate2010to2015<-PFDMigrAgeSexBCA$Out_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2010 to 2015" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-  Pop$Total[Pop$Year==2012][1:17]
-OutRate2005to2010<-PFDMigrAgeSexBCA$Out_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2005 to 2010" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-  Pop$Total[Pop$Year==2007][1:17]
-OutRate2000to2005<-PFDMigrAgeSexBCA$Out_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2000 to 2005" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-  Pop$Total[Pop$Year==2002][1:17]
-OutRate1995to2000<-PFDMigrAgeSexBCA$Out_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1995 to 2000" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-  Pop$Total[Pop$Year==1997][1:17]
-OutRate1990to1995<-PFDMigrAgeSexBCA$Out_Total[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1990 to 1995" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-  Pop$Total[Pop$Year==1992][1:17]
-}
-
-if(input$Sex=="Male") {
-  InSelect<-PFDMigrAgeSexBCA$In_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period==input$Period1 & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  OutSelect<-PFDMigrAgeSexBCA$Out_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period==input$Period1 & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  NetSelect<-InSelect-OutSelect
-  Pop<-rbind(PopAgeSexBCA20102020[PopAgeSexBCA20102020$Borough.Census.Area.FIPS==input$Area1,1:6],
-             PopAgeSexBCA20002010[PopAgeSexBCA20002010$Borough.Census.Area.FIPS==input$Area1 & PopAgeSexBCA20002010$Year!="2010",1:6],
-             PopAgeSexBCA19902000[PopAgeSexBCA19902000$Borough.Census.Area.FIPS==input$Area1 & PopAgeSexBCA19902000$Year!="2000",1:6])
-  
-  PopSelect<-Pop[Pop$Year==as.numeric(substr(input$Period1,1,4))+2,]
-  PopSelect<-PopSelect[1:17,]
-  
-  In2015to2020<-PFDMigrAgeSexBCA$In_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2015 to 2020" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  In2010to2015<-PFDMigrAgeSexBCA$In_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2010 to 2015" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  In2005to2010<-PFDMigrAgeSexBCA$In_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2005 to 2010" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  In2000to2005<-PFDMigrAgeSexBCA$In_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2000 to 2005" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  In1995to2000<-PFDMigrAgeSexBCA$In_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1995 to 2000" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  In1990to1995<-PFDMigrAgeSexBCA$In_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1990 to 1995" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  
-  Out2015to2020<-PFDMigrAgeSexBCA$Out_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2015 to 2020" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  Out2010to2015<-PFDMigrAgeSexBCA$Out_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2010 to 2015" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  Out2005to2010<-PFDMigrAgeSexBCA$Out_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2005 to 2010" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  Out2000to2005<-PFDMigrAgeSexBCA$Out_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2000 to 2005" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  Out1995to2000<-PFDMigrAgeSexBCA$Out_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1995 to 2000" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  Out1990to1995<-PFDMigrAgeSexBCA$Out_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1990 to 1995" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  
-  Net2015to2020<-In2015to2020-Out2015to2020
-  Net2010to2015<-In2010to2015-Out2010to2015
-  Net2005to2010<-In2005to2010-Out2005to2010
-  Net2000to2005<-In2000to2005-Out2000to2005
-  Net1995to2000<-In1995to2000-Out1995to2000
-  Net1990to1995<-In1990to1995-Out1990to1995
-  
-  InRateSelect<-PFDMigrAgeSexBCA$In_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period==input$Period1 & PFDMigrAgeSexBCA$Age!="Total"][1:17] / PopSelect$Total[1:17]
-  InRate2015to2020<-PFDMigrAgeSexBCA$In_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2015 to 2020" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==2017][1:17]
-  InRate2010to2015<-PFDMigrAgeSexBCA$In_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2010 to 2015" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==2012][1:17]
-  InRate2005to2010<-PFDMigrAgeSexBCA$In_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2005 to 2010" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==2007][1:17]
-  InRate2000to2005<-PFDMigrAgeSexBCA$In_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2000 to 2005" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==2002][1:17]
-  InRate1995to2000<-PFDMigrAgeSexBCA$In_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1995 to 2000" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==1997][1:17]
-  InRate1990to1995<-PFDMigrAgeSexBCA$In_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1990 to 1995" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==1992][1:17]
-  
-  OutRateSelect<-PFDMigrAgeSexBCA$Out_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period==input$Period1 & PFDMigrAgeSexBCA$Age!="Total"][1:17] / PopSelect$Total[1:17]
-  OutRate2015to2020<-PFDMigrAgeSexBCA$Out_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2015 to 2020" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==2017][1:17]
-  OutRate2010to2015<-PFDMigrAgeSexBCA$Out_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2010 to 2015" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==2012][1:17]
-  OutRate2005to2010<-PFDMigrAgeSexBCA$Out_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2005 to 2010" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==2007][1:17]
-  OutRate2000to2005<-PFDMigrAgeSexBCA$Out_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2000 to 2005" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==2002][1:17]
-  OutRate1995to2000<-PFDMigrAgeSexBCA$Out_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1995 to 2000" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==1997][1:17]
-  OutRate1990to1995<-PFDMigrAgeSexBCA$Out_Male[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1990 to 1995" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==1992][1:17]
-}
-
-if(input$Sex=="Female") {
-  InSelect<-PFDMigrAgeSexBCA$In_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period==input$Period1 & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  OutSelect<-PFDMigrAgeSexBCA$Out_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period==input$Period1 & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  NetSelect<-InSelect-OutSelect
-  Pop<-rbind(PopAgeSexBCA20102020[PopAgeSexBCA20102020$Borough.Census.Area.FIPS==input$Area1,1:6],
-             PopAgeSexBCA20002010[PopAgeSexBCA20002010$Borough.Census.Area.FIPS==input$Area1 & PopAgeSexBCA20002010$Year!="2010",1:6],
-             PopAgeSexBCA19902000[PopAgeSexBCA19902000$Borough.Census.Area.FIPS==input$Area1 & PopAgeSexBCA19902000$Year!="2000",1:6])
-  
-  PopSelect<-Pop[Pop$Year==as.numeric(substr(input$Period1,1,4))+2,]
-  PopSelect<-PopSelect[1:17,]
-  
-  In2015to2020<-PFDMigrAgeSexBCA$In_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2015 to 2020" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  In2010to2015<-PFDMigrAgeSexBCA$In_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2010 to 2015" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  In2005to2010<-PFDMigrAgeSexBCA$In_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2005 to 2010" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  In2000to2005<-PFDMigrAgeSexBCA$In_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2000 to 2005" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  In1995to2000<-PFDMigrAgeSexBCA$In_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1995 to 2000" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  In1990to1995<-PFDMigrAgeSexBCA$In_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1990 to 1995" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  
-  Out2015to2020<-PFDMigrAgeSexBCA$Out_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2015 to 2020" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  Out2010to2015<-PFDMigrAgeSexBCA$Out_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2010 to 2015" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  Out2005to2010<-PFDMigrAgeSexBCA$Out_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2005 to 2010" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  Out2000to2005<-PFDMigrAgeSexBCA$Out_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2000 to 2005" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  Out1995to2000<-PFDMigrAgeSexBCA$Out_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1995 to 2000" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  Out1990to1995<-PFDMigrAgeSexBCA$Out_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1990 to 1995" & PFDMigrAgeSexBCA$Age!="Total"][1:17]
-  
-  Net2015to2020<-In2015to2020-Out2015to2020
-  Net2010to2015<-In2010to2015-Out2010to2015
-  Net2005to2010<-In2005to2010-Out2005to2010
-  Net2000to2005<-In2000to2005-Out2000to2005
-  Net1995to2000<-In1995to2000-Out1995to2000
-  Net1990to1995<-In1990to1995-Out1990to1995
-  
-  InRateSelect<-PFDMigrAgeSexBCA$In_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period==input$Period1 & PFDMigrAgeSexBCA$Age!="Total"][1:17] / PopSelect$Total[1:17]
-  InRate2015to2020<-PFDMigrAgeSexBCA$In_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2015 to 2020" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==2017][1:17]
-  InRate2010to2015<-PFDMigrAgeSexBCA$In_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2010 to 2015" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==2012][1:17]
-  InRate2005to2010<-PFDMigrAgeSexBCA$In_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2005 to 2010" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==2007][1:17]
-  InRate2000to2005<-PFDMigrAgeSexBCA$In_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2000 to 2005" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==2002][1:17]
-  InRate1995to2000<-PFDMigrAgeSexBCA$In_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1995 to 2000" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==1997][1:17]
-  InRate1990to1995<-PFDMigrAgeSexBCA$In_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1990 to 1995" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==1992][1:17]
-  
-  OutRateSelect<-PFDMigrAgeSexBCA$Out_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period==input$Period1 & PFDMigrAgeSexBCA$Age!="Total"][1:17] / PopSelect$Total[1:17]
-  OutRate2015to2020<-PFDMigrAgeSexBCA$Out_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2015 to 2020" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==2017][1:17]
-  OutRate2010to2015<-PFDMigrAgeSexBCA$Out_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2010 to 2015" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==2012][1:17]
-  OutRate2005to2010<-PFDMigrAgeSexBCA$Out_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2005 to 2010" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==2007][1:17]
-  OutRate2000to2005<-PFDMigrAgeSexBCA$Out_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2000 to 2005" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==2002][1:17]
-  OutRate1995to2000<-PFDMigrAgeSexBCA$Out_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1995 to 2000" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==1997][1:17]
-  OutRate1990to1995<-PFDMigrAgeSexBCA$Out_Female[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1990 to 1995" & PFDMigrAgeSexBCA$Age!="Total"][1:17] / 
-    Pop$Total[Pop$Year==1992][1:17]
-}
+OutRateSelect<-PFDMigrAgeSexBCA$Out_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period==input$Period1 & PFDMigrAgeSexBCA$Age!="Total"][1:agelength] / PopSelect$Select[1:agelength]
+OutRate2015to2020<-PFDMigrAgeSexBCA$Out_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2015 to 2020" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength] / 
+  Pop$Select[Pop$Year==2017][1:agelength]
+OutRate2010to2015<-PFDMigrAgeSexBCA$Out_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2010 to 2015" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength] / 
+  Pop$Select[Pop$Year==2012][1:agelength]
+OutRate2005to2010<-PFDMigrAgeSexBCA$Out_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2005 to 2010" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength] / 
+  Pop$Select[Pop$Year==2007][1:agelength]
+OutRate2000to2005<-PFDMigrAgeSexBCA$Out_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="2000 to 2005" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength] / 
+  Pop$Select[Pop$Year==2002][1:agelength]
+OutRate1995to2000<-PFDMigrAgeSexBCA$Out_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1995 to 2000" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength] / 
+  Pop$Select[Pop$Year==1997][1:agelength]
+OutRate1990to1995<-PFDMigrAgeSexBCA$Out_Select[PFDMigrAgeSexBCA$Borough.Census.Area.FIPS==input$Area1 & PFDMigrAgeSexBCA$Period=="1990 to 1995" & PFDMigrAgeSexBCA$Age!="Total"][1:agelength] / 
+  Pop$Select[Pop$Year==1992][1:agelength]
 
 NetRateSelect<-InRateSelect-OutRateSelect
 NetRate2015to2020<-InRate2015to2020-OutRate2015to2020
@@ -430,7 +338,7 @@ lines(Net2005to2010, col="forestgreen", lwd=1, lty=3)
 lines(Net2000to2005, col="forestgreen", lwd=1, lty=3)
 lines(Net1995to2000, col="forestgreen", lwd=1, lty=3)
 lines(Net1990to1995, col="forestgreen", lwd=1, lty=3)
-axis(side=1,at=1:17,las=2,labels=agegroups,cex.axis=0.9)
+axis(side=1,at=1:agelength,las=2,labels=agegroups,cex.axis=0.9)
 axis(side=2,cex.axis=0.9)
 title(c("Average Annual Migration by Age Grouping",
         paste(c(text=names(AreaNames)[AreaNames == input$Area1]," ",text=input$Sex),collapse=""),
@@ -440,7 +348,7 @@ legend(10,YMax,
   col=c("blue", "orange", "forestgreen"), 
   lwd=c(4,4,4), cex=1)
 mtext(side=1,line=-23,adj=.7,text="Sum 0 to 84: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-23,adj=.9,text=sum(NetSelect[1:17]),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-23,adj=.9,text=sum(NetSelect[1:agelength]),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-22,adj=.7,text="Sum 0 to 14: ",font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-22,adj=.9,text=sum(NetSelect[1:3]),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-21,adj=.7,text="Sum 15 to 19: ",font=2,cex=.8,col="forestgreen")
@@ -448,7 +356,7 @@ mtext(side=1,line=-21,adj=.9,text=sum(NetSelect[4]),font=2,cex=.8,col="forestgre
 mtext(side=1,line=-20,adj=.7,text="Sum 20 to 49: ",font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-20,adj=.9,text=sum(NetSelect[5:10]),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-19,adj=.7,text="Sum 50 to 84: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-19,adj=.9,text=sum(NetSelect[11:17]),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-19,adj=.9,text=sum(NetSelect[11:agelength]),font=2,cex=.8,col="forestgreen")
 
 #RATES
 plot(InRateSelect,ylab="",xlab="",axes=F,col="blue",type="l",lwd=4,panel.first=c(abline(h=0)),ylim=c(YRateMin,YRateMax))
@@ -472,7 +380,7 @@ lines(NetRate2005to2010, col="forestgreen", lwd=1, lty=3)
 lines(NetRate2000to2005, col="forestgreen", lwd=1, lty=3)
 lines(NetRate1995to2000, col="forestgreen", lwd=1, lty=3)
 lines(NetRate1990to1995, col="forestgreen", lwd=1, lty=3)
-axis(side=1,at=1:17,las=2,labels=agegroups,cex.axis=0.9)
+axis(side=1,at=1:agelength,las=2,labels=agegroups,cex.axis=0.9)
 axis(side=2,cex.axis=0.9)
 title(c("Average Annual Migration by Age Grouping",
         paste(c(text=names(AreaNames)[AreaNames == input$Area1]," ",text=input$Sex),collapse=""),
@@ -482,31 +390,31 @@ legend(10,YRateMax,
        col=c("blue", "orange", "forestgreen"), 
        lwd=c(4,4,4), cex=1)
 mtext(side=1,line=-23,adj=.7,text="Sum 0 to 84: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-23,adj=.9,text=round(sum(NetRateSelect[1:17])*5,2),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-23,adj=.9,text=round(sum(NetRateSelect[1:agelength])*agesize,2),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-22,adj=.7,text="Sum 0 to 14: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-22,adj=.9,text=round(sum(NetRateSelect[1:3])*5,2),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-22,adj=.9,text=round(sum(NetRateSelect[1:3])*agesize,2),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-21,adj=.7,text="Sum 15 to 19: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-21,adj=.9,text=round(sum(NetRateSelect[4])*5,2),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-21,adj=.9,text=round(sum(NetRateSelect[4])*agesize,2),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-20,adj=.7,text="Sum 20 to 49: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-20,adj=.9,text=round(sum(NetRateSelect[5:10])*5,2),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-20,adj=.9,text=round(sum(NetRateSelect[5:10])*agesize,2),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-19,adj=.7,text="Sum 50 to 84: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-19,adj=.9,text=round(sum(NetRateSelect[11:17])*5,2),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-19,adj=.9,text=round(sum(NetRateSelect[11:agelength])*agesize,2),font=2,cex=.8,col="forestgreen")
 
 #SCALED RATES
-plot(InRateSelect/sum(InRateSelect),ylab="",xlab="",axes=F,col="blue",type="l",lwd=4,panel.first=c(abline(h=0)),ylim=c(YRateScaledMin,YRateScaledMax))
-lines(InRate2015to2020/sum(InRate2015to2020), col="blue", lwd=1, lty=3)
-lines(InRate2010to2015/sum(InRate2010to2015), col="blue", lwd=1, lty=3)
-lines(InRate2005to2010/sum(InRate2005to2010), col="blue", lwd=1, lty=3)
-lines(InRate2000to2005/sum(InRate2000to2005), col="blue", lwd=1, lty=3)
-lines(InRate1995to2000/sum(InRate1995to2000), col="blue", lwd=1, lty=3)
-lines(InRate1990to1995/sum(InRate1990to1995), col="blue", lwd=1, lty=3)
-lines(OutRateSelect/sum(OutRateSelect), col="orange", lwd=4)
-lines(OutRate2015to2020/sum(OutRate2015to2020), col="orange", lwd=1, lty=3)
-lines(OutRate2010to2015/sum(OutRate2010to2015), col="orange", lwd=1, lty=3)
-lines(OutRate2005to2010/sum(OutRate2005to2010), col="orange", lwd=1, lty=3)
-lines(OutRate2000to2005/sum(OutRate2000to2005), col="orange", lwd=1, lty=3)
-lines(OutRate1995to2000/sum(OutRate1995to2000), col="orange", lwd=1, lty=3)
-lines(OutRate1990to1995/sum(OutRate1990to1995), col="orange", lwd=1, lty=3)
+plot(InRateScaledSelect,ylab="",xlab="",axes=F,col="blue",type="l",lwd=4,panel.first=c(abline(h=0)),ylim=c(YRateScaledMin,YRateScaledMax))
+lines(InRateScaled2015to2020, col="blue", lwd=1, lty=3)
+lines(InRateScaled2010to2015, col="blue", lwd=1, lty=3)
+lines(InRateScaled2005to2010, col="blue", lwd=1, lty=3)
+lines(InRateScaled2000to2005, col="blue", lwd=1, lty=3)
+lines(InRateScaled1995to2000, col="blue", lwd=1, lty=3)
+lines(InRateScaled1990to1995, col="blue", lwd=1, lty=3)
+lines(OutRateScaledSelect, col="orange", lwd=4)
+lines(OutRateScaled2015to2020, col="orange", lwd=1, lty=3)
+lines(OutRateScaled2010to2015, col="orange", lwd=1, lty=3)
+lines(OutRateScaled2005to2010, col="orange", lwd=1, lty=3)
+lines(OutRateScaled2000to2005, col="orange", lwd=1, lty=3)
+lines(OutRateScaled1995to2000, col="orange", lwd=1, lty=3)
+lines(OutRateScaled1990to1995, col="orange", lwd=1, lty=3)
 lines(NetRateScaledSelect, col="forestgreen", lwd=4)
 lines(NetRateScaled2015to2020, col="forestgreen", lwd=1, lty=3)
 lines(NetRateScaled2010to2015, col="forestgreen", lwd=1, lty=3)
@@ -514,7 +422,7 @@ lines(NetRateScaled2005to2010, col="forestgreen", lwd=1, lty=3)
 lines(NetRateScaled2000to2005, col="forestgreen", lwd=1, lty=3)
 lines(NetRateScaled1995to2000, col="forestgreen", lwd=1, lty=3)
 lines(NetRateScaled1990to1995, col="forestgreen", lwd=1, lty=3)
-axis(side=1,at=1:17,las=2,labels=agegroups,cex.axis=0.9)
+axis(side=1,at=1:agelength,las=2,labels=agegroups,cex.axis=0.9)
 axis(side=2,cex.axis=0.9)
 title(c("Average Annual Migration by Age Grouping",
         paste(c(text=names(AreaNames)[AreaNames == input$Area1]," ",text=input$Sex),collapse=""),
@@ -524,15 +432,15 @@ legend(8,YRateScaledMax,
        col=c("blue", "orange", "forestgreen"), 
        lwd=c(4,4,4), cex=1)
 mtext(side=1,line=-23,adj=.7,text="Sum 0 to 84: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-23,adj=.9,text=round(sum(NetRateScaledSelect[1:17])*5,2),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-23,adj=.9,text=round(sum(NetRateScaledSelect[1:agelength])*agesize,2),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-22,adj=.7,text="Sum 0 to 14: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-22,adj=.9,text=round(sum(NetRateScaledSelect[1:3])*5,2),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-22,adj=.9,text=round(sum(NetRateScaledSelect[1:3])*agesize,2),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-21,adj=.7,text="Sum 15 to 19: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-21,adj=.9,text=round(sum(NetRateScaledSelect[4])*5,2),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-21,adj=.9,text=round(sum(NetRateScaledSelect[4])*agesize,2),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-20,adj=.7,text="Sum 20 to 49: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-20,adj=.9,text=round(sum(NetRateScaledSelect[5:10])*5,2),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-20,adj=.9,text=round(sum(NetRateScaledSelect[5:10])*agesize,2),font=2,cex=.8,col="forestgreen")
 mtext(side=1,line=-19,adj=.7,text="Sum 50 to 84: ",font=2,cex=.8,col="forestgreen")
-mtext(side=1,line=-19,adj=.9,text=round(sum(NetRateScaledSelect[11:17])*5,2),font=2,cex=.8,col="forestgreen")
+mtext(side=1,line=-19,adj=.9,text=round(sum(NetRateScaledSelect[11:agelength])*agesize,2),font=2,cex=.8,col="forestgreen")
 
 #SCALED AND EXTRAPOLATED RATES
 plot(NetRateScaledSelect,ylab="",xlab="",axes=F,col="forestgreen",type="l",lwd=4,panel.first=c(abline(h=0)),ylim=c(YRateScaledExtrapMin,YRateScaledExtrapMax))
@@ -542,27 +450,27 @@ lines(NetRateScaled2005to2010, col="forestgreen", lwd=1, lty=3)
 lines(NetRateScaled2000to2005, col="forestgreen", lwd=1, lty=3)
 lines(NetRateScaled1995to2000, col="forestgreen", lwd=1, lty=3)
 lines(NetRateScaled1990to1995, col="forestgreen", lwd=1, lty=3)
-lines(NetRateScaledExtrap, col="darkgrey", lwd=2, lty=2)
-axis(side=1,at=1:17,las=2,labels=agegroups,cex.axis=0.9)
+lines(NetRateScaledExtrap, col="gray49", lwd=2, lty=2)
+axis(side=1,at=1:agelength,las=2,labels=agegroups,cex.axis=0.9)
 axis(side=2,cex.axis=0.9)
 title(c("Average Annual Migration by Age Grouping",
         paste(c(text=names(AreaNames)[AreaNames == input$Area1]," ",text=input$Sex),collapse=""),
         paste(c(text=input$Period1," in Bold"),collapse="")))
 legend(8,YRateScaledExtrapMax, 
        legend=c("Scaled Net Migration Ratios", "Extrapolated Values"), 
-       col=c("forestgreen", "darkgrey"), 
+       col=c("forestgreen", "gray49"), 
        lwd=c(4,2), lty=c(1,2), cex=1)
-mtext(side=1,line=-24,adj=.85,text="Extrapolated Values ",font=2,cex=.9,col="darkgrey")
-mtext(side=1,line=-23,adj=.7,text="Sum 0 to 84: ",font=2,cex=.8,col="darkgrey")
-mtext(side=1,line=-23,adj=.9,text=round(sum(NetRateScaledExtrap[1:17])*5,2),font=2,cex=.8,col="darkgrey")
-mtext(side=1,line=-22,adj=.7,text="Sum 0 to 14: ",font=2,cex=.8,col="darkgrey")
-mtext(side=1,line=-22,adj=.9,text=round(sum(NetRateScaledExtrap[1:3])*5,2),font=2,cex=.8,col="darkgrey")
-mtext(side=1,line=-21,adj=.7,text="Sum 15 to 19: ",font=2,cex=.8,col="darkgrey")
-mtext(side=1,line=-21,adj=.9,text=round(sum(NetRateScaledExtrap[4])*5,2),font=2,cex=.8,col="darkgrey")
-mtext(side=1,line=-20,adj=.7,text="Sum 20 to 49: ",font=2,cex=.8,col="darkgrey")
-mtext(side=1,line=-20,adj=.9,text=round(sum(NetRateScaledExtrap[5:10])*5,2),font=2,cex=.8,col="darkgrey")
-mtext(side=1,line=-19,adj=.7,text="Sum 50 to 84: ",font=2,cex=.8,col="darkgrey")
-mtext(side=1,line=-19,adj=.9,text=round(sum(NetRateScaledExtrap[11:17])*5,2),font=2,cex=.8,col="darkgrey")
+mtext(side=1,line=-24,adj=.85,text="Extrapolated Values ",font=2,cex=.9,col="gray49")
+mtext(side=1,line=-23,adj=.7,text="Sum 0 to 84: ",font=2,cex=.8,col="gray49")
+mtext(side=1,line=-23,adj=.9,text=round(sum(NetRateScaledExtrap[1:agelength])*agesize,2),font=2,cex=.8,col="gray49")
+mtext(side=1,line=-22,adj=.7,text="Sum 0 to 14: ",font=2,cex=.8,col="gray49")
+mtext(side=1,line=-22,adj=.9,text=round(sum(NetRateScaledExtrap[1:3])*agesize,2),font=2,cex=.8,col="gray49")
+mtext(side=1,line=-21,adj=.7,text="Sum 15 to 19: ",font=2,cex=.8,col="gray49")
+mtext(side=1,line=-21,adj=.9,text=round(sum(NetRateScaledExtrap[4])*agesize,2),font=2,cex=.8,col="gray49")
+mtext(side=1,line=-20,adj=.7,text="Sum 20 to 49: ",font=2,cex=.8,col="gray49")
+mtext(side=1,line=-20,adj=.9,text=round(sum(NetRateScaledExtrap[5:10])*agesize,2),font=2,cex=.8,col="gray49")
+mtext(side=1,line=-19,adj=.7,text="Sum 50 to 84: ",font=2,cex=.8,col="gray49")
+mtext(side=1,line=-19,adj=.9,text=round(sum(NetRateScaledExtrap[11:agelength])*agesize,2),font=2,cex=.8,col="gray49")
 }
 
 },height=950,width=950)
