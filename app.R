@@ -312,8 +312,8 @@ YRateScaledMin<--1.5*abs(min(c(NetRateScaledSelect,NetRateScaled2015to2020,NetRa
 YRateScaledMax<-1.25*max(c(InRateScaledSelect,InRateScaled2015to2020,InRateScaled2010to2015,InRateScaled2005to2010,InRateScaled2005to2010,InRateScaled2000to2005,InRateScaled1995to2000,InRateScaled1990to1995,
                     OutRateScaled2015to2020,OutRateScaled2010to2015,OutRateScaled2005to2010,OutRateScaled2005to2010,OutRateScaled2000to2005,OutRateScaled1995to2000,OutRateScaled1990to1995))
 
-YRateScaledExtrapMin<--1.5*abs(min(c(NetRateScaledSelect,NetRateScaled2015to2020,NetRateScaled2010to2015,NetRateScaled2005to2010,NetRateScaled2005to2010,NetRateScaled2000to2005,NetRateScaled1995to2000,NetRateScaled1990to1995)))
-YRateScaledExtrapMax<-1.5*abs(max(c(NetRateScaledSelect,NetRateScaled2015to2020,NetRateScaled2010to2015,NetRateScaled2005to2010,NetRateScaled2005to2010,NetRateScaled2000to2005,NetRateScaled1995to2000,NetRateScaled1990to1995)))
+YRateScaledExtrapMin<--1.25*abs(min(c(NetRateScaledSelect,NetRateScaled2015to2020,NetRateScaled2010to2015,NetRateScaled2005to2010,NetRateScaled2005to2010,NetRateScaled2000to2005,NetRateScaled1995to2000,NetRateScaled1990to1995)))
+YRateScaledExtrapMax<-2*abs(min(c(NetRateScaledSelect,NetRateScaled2015to2020,NetRateScaled2010to2015,NetRateScaled2005to2010,NetRateScaled2005to2010,NetRateScaled2000to2005,NetRateScaled1995to2000,NetRateScaled1990to1995)))
 
 ##########
 #MIGRATION
